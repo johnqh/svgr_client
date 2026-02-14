@@ -7,10 +7,12 @@ export function useConvert(client: SvgrClient) {
       original,
       filename,
       quality,
+      transparentBg,
     }: {
       original: string;
       filename?: string;
       quality?: number;
-    }) => client.convert(original, filename, quality),
+      transparentBg?: boolean;
+    }) => client.convert(original, filename, quality, transparentBg),
   });
 }
