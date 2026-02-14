@@ -1,4 +1,4 @@
-import type { BaseResponse, ConvertResult } from '@sudobility/svgr_types';
+import type { BaseResponse, ConvertResult } from "@sudobility/svgr_types";
 
 export interface SvgrClientConfig {
   baseUrl: string;
@@ -10,7 +10,7 @@ export class SvgrApiError extends Error {
     message: string,
   ) {
     super(message);
-    this.name = 'SvgrApiError';
+    this.name = "SvgrApiError";
   }
 }
 
@@ -26,18 +26,18 @@ export class SvgrClient {
     filename?: string,
   ): Promise<BaseResponse<ConvertResult>> {
     const response = await fetch(`${this.baseUrl}/api/v1/convert`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ original, filename }),
     });
 
     if (!response.ok) {
       const error = await response
         .json()
-        .catch(() => ({ error: 'Unknown error' }));
+        .catch(() => ({ error: "Unknown error" }));
       throw new SvgrApiError(
         response.status,
-        (error as { error?: string }).error || 'Conversion failed',
+        (error as { error?: string }).error || "Conversion failed",
       );
     }
 
