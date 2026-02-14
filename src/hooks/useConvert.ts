@@ -6,9 +6,11 @@ export function useConvert(client: SvgrClient) {
     mutationFn: ({
       original,
       filename,
+      quality,
     }: {
       original: string;
       filename?: string;
-    }) => client.convert(original, filename),
+      quality?: number;
+    }) => client.convert(original, filename, quality),
   });
 }

@@ -24,11 +24,12 @@ export class SvgrClient {
   async convert(
     original: string,
     filename?: string,
+    quality?: number,
   ): Promise<BaseResponse<ConvertResult>> {
     const response = await fetch(`${this.baseUrl}/api/v1/convert`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ original, filename }),
+      body: JSON.stringify({ original, filename, quality }),
     });
 
     if (!response.ok) {
