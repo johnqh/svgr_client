@@ -20,8 +20,8 @@ API client SDK for SVGR with React Query hooks.
 src/
 ├── index.ts                     # Main exports
 ├── network/
-│   ├── SvgrClient.ts            # HTTP client class
-│   └── SvgrClient.test.ts       # Client tests
+│   ├── SvgrClient.ts            # HTTP client class with retry support
+│   └── SvgrClient.test.ts       # Client tests (including retry tests)
 └── hooks/
     ├── index.ts                 # Hook exports
     ├── useConvert.ts            # useMutation wrapper for convert
@@ -45,21 +45,50 @@ bun run verify       # All checks + build (use before commit)
 
 ### SvgrClient
 
-HTTP client constructed with `{ baseUrl, getToken }`:
+HTTP client constructed with `SvgrClientConfig`:
 - `baseUrl` -- API server URL (e.g., `https://api.svgr.app`)
-- `getToken` -- async callback that returns a Bearer token (or null for anonymous)
-- `convert(request)` -- POSTs to `/api/v1/convert` with Bearer auth, sends `ConvertRequest`, returns `ConvertResponse`
+- `networkClient` -- a `NetworkClient` from `@sudobility/types` that handles authentication and HTTP communication
+- `retry` -- optional `RetryConfig` for automatic retry with exponential backoff
+- `convert(original, filename?, quality?, transparentBg?)` -- POSTs to `/api/v1/convert`, returns `BaseResponse<ConvertResult>`
+
+### RetryConfig
+
+Optional retry configuration for failed network requests:
+- `maxRetries` -- maximum number of retry attempts (e.g., 3)
+- `baseDelayMs` -- base delay in ms before first retry (e.g., 1000). Uses exponential backoff: `baseDelayMs * 2^attempt`
+- `retryableStatuses` -- HTTP status codes to retry on (defaults to `[408, 429, 500, 502, 503, 504]`)
 
 ### useConvert Hook
 
-TanStack Query `useMutation` wrapper around `SvgrClient.convert()`. Returns standard mutation object with `mutate`/`mutateAsync`.
+TanStack Query `useMutation` wrapper around `SvgrClient.convert()`. Accepts a `ConvertMutationParams` object with `{ original, filename?, quality?, transparentBg? }`. Returns standard mutation object with `mutate`/`mutateAsync`.
 
 ### Query Keys
 
-`svgrKeys` factory for cache key management.
+`svgrKeys` factory for cache key management:
+- `svgrKeys.all` -- `["svgr"]` base key for all SVGR queries
+- `svgrKeys.convert()` -- `["svgr", "convert"]` key for conversion queries
+
+## Exports
+
+### Classes
+- `SvgrClient` -- HTTP client for SVGR API
+- `SvgrApiError` -- Error class with HTTP `status` property
+
+### Hooks
+- `useConvert` -- TanStack Query mutation hook for conversions
+- `svgrKeys` -- Query key factory
+
+### Types
+- `SvgrClientConfig` -- Configuration for `SvgrClient` constructor
+- `RetryConfig` -- Retry configuration for failed requests
+- `ConvertMutationParams` -- Parameters for the `useConvert` mutation
+
+### Re-exports from `@sudobility/svgr_types`
+- `ConvertRequest`, `ConvertResult`, `ConvertResponse`, `BaseResponse`
 
 ## Peer Dependencies
 
+- `@sudobility/types` ^1.9.54 -- provides `NetworkClient` interface
 - `react` ^18 || ^19
 - `@tanstack/react-query` ^5
 
@@ -70,6 +99,9 @@ TanStack Query `useMutation` wrapper around `SvgrClient.convert()`. Returns stan
 ## Architecture
 
 ```
+@sudobility/types (NetworkClient)
+    ^
+    |
 svgr_types
     ^
     |
@@ -89,25 +121,29 @@ svgr_lib, svgr_app, svgr_app_rn
 
 ## Coding Patterns
 
-- **`SvgrClient` class** is constructed with `{ baseUrl, getToken }` where `getToken` is an async function returning a Bearer token (or null for anonymous access)
-- **`useConvert` mutation hook** wraps `SvgrClient.convert()` using TanStack React Query's `useMutation`
+- **`SvgrClient` class** is constructed with `{ baseUrl, networkClient, retry? }` where `networkClient` is a `NetworkClient` from `@sudobility/types` that handles authentication headers and request serialization
+- **`convert()` takes individual parameters** -- `convert(original, filename?, quality?, transparentBg?)`, not a `ConvertRequest` object
+- **`useConvert` mutation hook** wraps `SvgrClient.convert()` using TanStack React Query's `useMutation`, accepting a `ConvertMutationParams` object
 - **`svgrKeys` query key factory** provides consistent cache keys for React Query
 - **`SvgrApiError`** extends `Error` with a `status` code property for HTTP error handling
+- **Retry with exponential backoff** -- optional `RetryConfig` on `SvgrClientConfig` enables automatic retries for transient failures
 - Only one API endpoint is used: `POST /api/v1/convert`
 - ESM-only build output (no CJS)
 
 ## Gotchas
 
-- **`getToken` is optional** -- anonymous conversion is allowed. When `getToken` returns null or is not provided, requests are sent without an Authorization header.
+- **Uses `NetworkClient`, not `getToken`** -- authentication is handled by the `NetworkClient` implementation, not by this package. The old `getToken` pattern is no longer used.
+- **`convert()` takes individual params, not a request object** -- the method signature is `convert(original, filename?, quality?, transparentBg?)`, not `convert(request: ConvertRequest)`.
 - **Throws `SvgrApiError` on HTTP errors** -- consumers must catch this specific error type to get the HTTP status code. A generic `Error` catch will miss the `status` property.
 - **Only one endpoint** -- `POST /api/v1/convert`. Credit/consumable endpoints are handled by a separate consumables client, not this package.
 - **`exactOptionalPropertyTypes`** is enabled in tsconfig -- be careful with optional properties (cannot assign `undefined` to optional fields without explicitly including `undefined` in the type).
-- Peer dependencies on React 18/19 and TanStack React Query 5 -- consumers must provide these.
+- Peer dependencies on React 18/19, TanStack React Query 5, and `@sudobility/types` -- consumers must provide these.
+- **`removeComments: true`** in tsconfig -- JSDoc comments are stripped from the JS output but preserved in `.d.ts` declaration files.
 
 ## Testing
 
 - **Command**: `bun test` (runs Vitest)
 - Tests are in `src/network/SvgrClient.test.ts` and `src/hooks/query-keys.test.ts`
-- Client tests verify HTTP request formation, auth header inclusion, and error handling
+- Client tests verify HTTP request formation, error handling, and retry behavior
 - Query key tests verify the key factory produces correct cache keys
-- Mock `fetch` for client tests rather than hitting a real server
+- Uses `MockNetworkClient` from `@sudobility/di/mocks` for mocking HTTP requests
