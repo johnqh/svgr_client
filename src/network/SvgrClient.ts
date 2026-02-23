@@ -1,8 +1,9 @@
+import type { NetworkClient } from "@sudobility/types";
 import type { BaseResponse, ConvertResult } from "@sudobility/svgr_types";
 
 export interface SvgrClientConfig {
   baseUrl: string;
-  getToken?: () => Promise<string | null>;
+  networkClient: NetworkClient;
 }
 
 export class SvgrApiError extends Error {
@@ -16,12 +17,12 @@ export class SvgrApiError extends Error {
 }
 
 export class SvgrClient {
-  private baseUrl: string;
-  private getToken: (() => Promise<string | null>) | undefined;
+  private readonly baseUrl: string;
+  private readonly networkClient: NetworkClient;
 
   constructor(config: SvgrClientConfig) {
     this.baseUrl = config.baseUrl;
-    this.getToken = config.getToken;
+    this.networkClient = config.networkClient;
   }
 
   async convert(
@@ -30,33 +31,24 @@ export class SvgrClient {
     quality?: number,
     transparentBg?: boolean,
   ): Promise<BaseResponse<ConvertResult>> {
-    const headers: Record<string, string> = {
-      "Content-Type": "application/json",
-    };
+    const response = await this.networkClient.post<BaseResponse<ConvertResult>>(
+      `${this.baseUrl}/api/v1/convert`,
+      {
+        original,
+        filename,
+        quality,
+        transparentBg,
+      },
+    );
 
-    if (this.getToken) {
-      const token = await this.getToken();
-      if (token) {
-        headers["Authorization"] = `Bearer ${token}`;
-      }
-    }
-
-    const response = await fetch(`${this.baseUrl}/api/v1/convert`, {
-      method: "POST",
-      headers,
-      body: JSON.stringify({ original, filename, quality, transparentBg }),
-    });
-
-    if (!response.ok) {
-      const error = await response
-        .json()
-        .catch(() => ({ error: "Unknown error" }));
+    if (!response.ok || !response.data) {
+      const errorData = response.data as { error?: string } | null | undefined;
       throw new SvgrApiError(
         response.status,
-        (error as { error?: string }).error || "Conversion failed",
+        errorData?.error || "Conversion failed",
       );
     }
 
-    return response.json();
+    return response.data;
   }
 }

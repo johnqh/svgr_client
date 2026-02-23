@@ -1,12 +1,17 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
+import { MockNetworkClient } from '@sudobility/di/mocks';
 import { SvgrClient, SvgrApiError } from './SvgrClient';
 
 describe('SvgrClient', () => {
   let client: SvgrClient;
+  let mockNetwork: MockNetworkClient;
 
   beforeEach(() => {
-    client = new SvgrClient({ baseUrl: 'http://localhost:3001' });
-    vi.restoreAllMocks();
+    mockNetwork = new MockNetworkClient();
+    client = new SvgrClient({
+      baseUrl: 'http://localhost:3001',
+      networkClient: mockNetwork,
+    });
   });
 
   it('sends POST request to /api/v1/convert', async () => {
@@ -15,66 +20,56 @@ describe('SvgrClient', () => {
       data: { svg: '<svg/>', width: 100, height: 100 },
     };
 
-    vi.stubGlobal(
-      'fetch',
-      vi.fn().mockResolvedValue({
-        ok: true,
-        json: () => Promise.resolve(mockResponse),
-      }),
+    mockNetwork.setMockResponse(
+      'http://localhost:3001/api/v1/convert',
+      { data: mockResponse, ok: true },
+      'POST',
     );
 
     const result = await client.convert('base64data', 'test.png');
     expect(result).toEqual(mockResponse);
-    expect(fetch).toHaveBeenCalledWith(
-      'http://localhost:3001/api/v1/convert',
-      expect.objectContaining({
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-      }),
-    );
+    expect(mockNetwork.wasUrlCalled('http://localhost:3001/api/v1/convert', 'POST')).toBe(true);
   });
 
-  it('includes filename in request body when provided', async () => {
-    vi.stubGlobal(
-      'fetch',
-      vi.fn().mockResolvedValue({
-        ok: true,
-        json: () => Promise.resolve({ success: true }),
-      }),
+  it('includes all parameters in request body', async () => {
+    mockNetwork.setMockResponse(
+      'http://localhost:3001/api/v1/convert',
+      { data: { success: true }, ok: true },
+      'POST',
     );
 
-    await client.convert('data', 'photo.png');
-    const body = JSON.parse(
-      (vi.mocked(fetch).mock.calls[0][1] as RequestInit).body as string,
+    await client.convert('data', 'photo.png', 90, true);
+
+    const lastRequest = mockNetwork.getLastRequest();
+    expect(lastRequest?.body).toBe(
+      JSON.stringify({
+        original: 'data',
+        filename: 'photo.png',
+        quality: 90,
+        transparentBg: true,
+      }),
     );
-    expect(body).toEqual({ original: 'data', filename: 'photo.png' });
   });
 
   it('throws SvgrApiError on non-ok response', async () => {
-    vi.stubGlobal(
-      'fetch',
-      vi.fn().mockResolvedValue({
-        ok: false,
-        status: 400,
-        json: () => Promise.resolve({ error: 'Bad request' }),
-      }),
+    mockNetwork.setMockResponse(
+      'http://localhost:3001/api/v1/convert',
+      { data: { error: 'Bad request' }, ok: false, status: 400 },
+      'POST',
     );
 
     await expect(client.convert('bad')).rejects.toThrow(SvgrApiError);
     await expect(client.convert('bad')).rejects.toThrow('Bad request');
   });
 
-  it('handles non-JSON error responses', async () => {
-    vi.stubGlobal(
-      'fetch',
-      vi.fn().mockResolvedValue({
-        ok: false,
-        status: 500,
-        json: () => Promise.reject(new Error('not json')),
-      }),
+  it('throws SvgrApiError with default message when no error field', async () => {
+    mockNetwork.setMockResponse(
+      'http://localhost:3001/api/v1/convert',
+      { data: null, ok: false, status: 500 },
+      'POST',
     );
 
-    await expect(client.convert('bad')).rejects.toThrow(SvgrApiError);
+    await expect(client.convert('bad')).rejects.toThrow('Conversion failed');
   });
 });
 
