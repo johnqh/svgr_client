@@ -183,6 +183,7 @@ export class SvgrClient {
           quality,
           transparentBg,
         },
+        { timeout: 30000 },
       );
 
     const response = this.retryConfig
