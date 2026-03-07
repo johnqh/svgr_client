@@ -140,9 +140,8 @@ svgr_lib, svgr_app, svgr_app_rn
 - Peer dependencies on React 18/19, TanStack React Query 5, and `@sudobility/types` -- consumers must provide these.
 - **`removeComments: true`** in tsconfig -- JSDoc comments are stripped from the JS output but preserved in `.d.ts` declaration files.
 
-## Testing
+## Testing Notes
 
-- **Command**: `bun test` (runs Vitest)
 - Tests are in `src/network/SvgrClient.test.ts` and `src/hooks/query-keys.test.ts`
 - Client tests verify HTTP request formation, error handling, and retry behavior
 - Query key tests verify the key factory produces correct cache keys
