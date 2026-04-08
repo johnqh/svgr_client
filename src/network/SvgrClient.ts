@@ -173,6 +173,7 @@ export class SvgrClient {
     filename?: string,
     quality?: number,
     transparentBg?: boolean,
+    ocr?: boolean,
   ): Promise<BaseResponse<ConvertResult>> {
     const makeRequest = () =>
       this.networkClient.post<BaseResponse<ConvertResult>>(
@@ -182,6 +183,7 @@ export class SvgrClient {
           filename,
           quality,
           transparentBg,
+          ocr,
         },
         { timeout: 30000 },
       );

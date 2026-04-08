@@ -19,6 +19,8 @@ export interface ConvertMutationParams {
   quality?: number;
   /** If true, removes the background from the SVG. Default: false */
   transparentBg?: boolean;
+  /** If true, runs OCR to detect text and emit editable SVG text elements. Default: true */
+  ocr?: boolean;
 }
 
 /**
@@ -76,7 +78,8 @@ export function useConvert(client: SvgrClient) {
       filename,
       quality,
       transparentBg,
+      ocr,
     }: ConvertMutationParams) =>
-      client.convert(original, filename, quality, transparentBg),
+      client.convert(original, filename, quality, transparentBg, ocr),
   });
 }
