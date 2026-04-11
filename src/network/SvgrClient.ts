@@ -115,7 +115,7 @@ export class SvgrApiError extends Error {
  * });
  *
  * const response = await client.convert(base64Image, 'logo.png', 7, true);
- * console.log(response.data?.svg);
+ * const svg = await client.fetchSvg(response.data!.cacheId);
  * ```
  *
  * @example
@@ -144,7 +144,8 @@ export class SvgrClient {
    *
    * Sends a POST request to `/api/v1/convert` with the image data and
    * optional conversion parameters. Returns a `BaseResponse<ConvertResult>`
-   * containing the SVG string and original image dimensions on success.
+   * containing a cache ID and original image dimensions on success.
+   * Use {@link fetchSvg} with the cache ID to retrieve the SVG content.
    *
    * @param original - Base64-encoded raster image data (PNG, JPG, WEBP, BMP, or GIF)
    * @param filename - Optional filename for metadata or audit purposes
@@ -162,9 +163,10 @@ export class SvgrClient {
    *   true,
    * );
    * if (response.success && response.data) {
-   *   console.log(response.data.svg);    // SVG string
-   *   console.log(response.data.width);  // Original width in px
-   *   console.log(response.data.height); // Original height in px
+   *   const svg = await client.fetchSvg(response.data.cacheId);
+   *   console.log(svg);                   // SVG string
+   *   console.log(response.data.width);   // Original width in px
+   *   console.log(response.data.height);  // Original height in px
    * }
    * ```
    */
@@ -203,6 +205,35 @@ export class SvgrClient {
     }
 
     return response.data;
+  }
+
+  /**
+   * Fetch a cached SVG by its cache ID.
+   *
+   * Sends a GET request to `/api/v1/svg/:cacheId` which returns the raw SVG
+   * content with `Content-Type: image/svg+xml`. Uses native `fetch` instead
+   * of the `NetworkClient` because the response is raw SVG text, not JSON.
+   *
+   * @param cacheId - The cache ID returned from a successful {@link convert} call
+   * @returns The SVG content as a string
+   * @throws {SvgrApiError} When the fetch fails or returns a non-OK status
+   *
+   * @example
+   * ```typescript
+   * const response = await client.convert(imageData, 'logo.png');
+   * if (response.success && response.data) {
+   *   const svg = await client.fetchSvg(response.data.cacheId);
+   *   console.log(svg); // '<svg xmlns="http://www.w3.org/2000/svg">...</svg>'
+   * }
+   * ```
+   */
+  async fetchSvg(cacheId: string): Promise<string> {
+    const url = `${this.baseUrl}/api/v1/svg/${cacheId}`;
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new SvgrApiError(response.status, "Failed to fetch SVG");
+    }
+    return response.text();
   }
 
   /**
