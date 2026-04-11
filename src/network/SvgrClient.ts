@@ -174,6 +174,7 @@ export class SvgrClient {
     quality?: number,
     transparentBg?: boolean,
     ocr?: boolean,
+    mergePaths?: boolean,
   ): Promise<BaseResponse<ConvertResult>> {
     const makeRequest = () =>
       this.networkClient.post<BaseResponse<ConvertResult>>(
@@ -184,6 +185,7 @@ export class SvgrClient {
           quality,
           transparentBg,
           ocr,
+          mergePaths,
         },
         { timeout: 30000 },
       );

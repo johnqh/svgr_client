@@ -21,6 +21,8 @@ export interface ConvertMutationParams {
   transparentBg?: boolean;
   /** If true, runs OCR to detect text and emit editable SVG text elements. Default: true */
   ocr?: boolean;
+  /** If true, aggressively merges small and thin vector paths into neighbors. Default: true */
+  mergePaths?: boolean;
 }
 
 /**
@@ -79,7 +81,15 @@ export function useConvert(client: SvgrClient) {
       quality,
       transparentBg,
       ocr,
+      mergePaths,
     }: ConvertMutationParams) =>
-      client.convert(original, filename, quality, transparentBg, ocr),
+      client.convert(
+        original,
+        filename,
+        quality,
+        transparentBg,
+        ocr,
+        mergePaths,
+      ),
   });
 }
