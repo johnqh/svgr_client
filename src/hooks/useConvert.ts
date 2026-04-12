@@ -23,6 +23,8 @@ export interface ConvertMutationParams {
   ocr?: boolean;
   /** If true, aggressively merges small and thin vector paths into neighbors. Default: true */
   mergePaths?: boolean;
+  /** Smoothing level 0-3 for the output SVG paths. Default: 0 (no smoothing) */
+  smooth?: number;
 }
 
 /**
@@ -82,6 +84,7 @@ export function useConvert(client: SvgrClient) {
       transparentBg,
       ocr,
       mergePaths,
+      smooth,
     }: ConvertMutationParams) =>
       client.convert(
         original,
@@ -90,6 +93,7 @@ export function useConvert(client: SvgrClient) {
         transparentBg,
         ocr,
         mergePaths,
+        smooth,
       ),
   });
 }
