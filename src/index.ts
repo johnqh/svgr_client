@@ -31,4 +31,6 @@ export type {
   ConvertResult,
   ConvertResponse,
   BaseResponse,
+  ImageType,
 } from "@sudobility/svgr_types";
+export { IMAGE_TYPES } from "@sudobility/svgr_types";

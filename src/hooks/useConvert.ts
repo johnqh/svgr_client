@@ -1,4 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
+import type { ImageType } from "@sudobility/svgr_types";
 import type { SvgrClient } from "../network/SvgrClient";
 
 /**
@@ -25,6 +26,8 @@ export interface ConvertMutationParams {
   mergePaths?: boolean;
   /** Smoothing level 0-3 for the output SVG paths. Default: 0 (no smoothing) */
   smooth?: number;
+  /** Image type for preprocessing: 'auto', 'photo', or 'design'. Default: 'auto' */
+  imageType?: ImageType;
 }
 
 /**
@@ -85,6 +88,7 @@ export function useConvert(client: SvgrClient) {
       ocr,
       mergePaths,
       smooth,
+      imageType,
     }: ConvertMutationParams) =>
       client.convert(
         original,
@@ -94,6 +98,7 @@ export function useConvert(client: SvgrClient) {
         ocr,
         mergePaths,
         smooth,
+        imageType,
       ),
   });
 }

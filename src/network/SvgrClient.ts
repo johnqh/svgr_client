@@ -1,5 +1,9 @@
 import type { NetworkClient } from "@sudobility/types";
-import type { BaseResponse, ConvertResult } from "@sudobility/svgr_types";
+import type {
+  BaseResponse,
+  ConvertResult,
+  ImageType,
+} from "@sudobility/svgr_types";
 
 /**
  * Configuration for creating an {@link SvgrClient} instance.
@@ -178,6 +182,7 @@ export class SvgrClient {
     ocr?: boolean,
     mergePaths?: boolean,
     smooth?: number,
+    imageType?: ImageType,
   ): Promise<BaseResponse<ConvertResult>> {
     const makeRequest = () =>
       this.networkClient.post<BaseResponse<ConvertResult>>(
@@ -190,6 +195,7 @@ export class SvgrClient {
           ocr,
           mergePaths,
           smooth,
+          imageType,
         },
         { timeout: 30000 },
       );
