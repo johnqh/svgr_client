@@ -197,7 +197,7 @@ export class SvgrClient {
           smooth,
           imageType,
         },
-        { timeout: 30000 },
+        { timeout: 120000 },
       );
 
     const response = this.retryConfig
