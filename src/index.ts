@@ -22,7 +22,14 @@ export {
 } from "./network/SvgrClient";
 
 // Hooks
-export { useConvert, svgrKeys } from "./hooks";
+export {
+  useConvert,
+  useUploadImage,
+  useCreateJob,
+  useJobStatus,
+  useImageJobs,
+  svgrKeys,
+} from "./hooks";
 export type { ConvertMutationParams } from "./hooks/useConvert";
 
 // Re-export types for convenience
@@ -31,6 +38,14 @@ export type {
   ConvertResult,
   ConvertResponse,
   BaseResponse,
+  CreateJobRequest,
+  CreateJobResponse,
   ImageType,
+  ImageUploadResult,
+  ImageUploadResponse,
+  JobListResponse,
+  JobResult,
+  JobStatus,
+  JobStatusResponse,
 } from "@sudobility/svgr_types";
 export { IMAGE_TYPES } from "@sudobility/svgr_types";

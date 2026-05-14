@@ -23,4 +23,11 @@ export const svgrKeys = {
   all: ["svgr"] as const,
   /** Key for conversion queries: `["svgr", "convert"]` */
   convert: () => [...svgrKeys.all, "convert"] as const,
+  /** Base key for all job queries: `["svgr", "jobs"]` */
+  jobs: () => [...svgrKeys.all, "jobs"] as const,
+  /** Key for a specific job: `["svgr", "jobs", jobId]` */
+  job: (jobId: string) => [...svgrKeys.jobs(), jobId] as const,
+  /** Key for all jobs of an image: `["svgr", "jobs", "image", imageId]` */
+  imageJobs: (imageId: string) =>
+    [...svgrKeys.jobs(), "image", imageId] as const,
 };
