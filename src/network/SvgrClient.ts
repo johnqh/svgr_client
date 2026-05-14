@@ -155,6 +155,7 @@ export class SvgrClient {
    * @param filename - Optional filename for metadata or audit purposes
    * @param quality - Conversion quality level from 1 to 10 (1 = smallest, 10 = highest fidelity). Default: 5
    * @param transparentBg - If true, removes the background from the SVG. Default: false
+   * @param imageType - Optional shared preprocessing profile such as `photo`, `gray_scale`, or `design`
    * @returns A promise resolving to a `BaseResponse<ConvertResult>` with the SVG output
    * @throws {SvgrApiError} When the API returns a non-successful response (includes HTTP status code)
    *
