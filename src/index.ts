@@ -28,6 +28,7 @@ export {
   useCreateJob,
   useJobStatus,
   useImageJobs,
+  useUserImages,
   svgrKeys,
 } from "./hooks";
 export type { ConvertMutationParams } from "./hooks/useConvert";
@@ -43,6 +44,8 @@ export type {
   ImageType,
   ImageUploadResult,
   ImageUploadResponse,
+  ImageWithJobs,
+  ImageListResponse,
   JobListResponse,
   JobResult,
   JobStatus,

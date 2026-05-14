@@ -5,6 +5,7 @@ import type {
   CreateJobRequest,
   ImageType,
   ImageUploadResult,
+  ImageWithJobs,
   JobResult,
 } from "@sudobility/svgr_types";
 
@@ -338,6 +339,22 @@ export class SvgrClient {
     }
 
     return response.data as Blob;
+  }
+
+  /** List all images with their jobs for the authenticated user. */
+  async getUserImages(): Promise<BaseResponse<ImageWithJobs[]>> {
+    const url = `${this.baseUrl}/api/v1/images`;
+    const response =
+      await this.networkClient.get<BaseResponse<ImageWithJobs[]>>(url);
+
+    if (!response.ok) {
+      throw new SvgrApiError(
+        response.status,
+        (response.data as { error?: string })?.error ?? "Failed to list images",
+      );
+    }
+
+    return response.data as BaseResponse<ImageWithJobs[]>;
   }
 
   /**
