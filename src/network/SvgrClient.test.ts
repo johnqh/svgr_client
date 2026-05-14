@@ -164,6 +164,106 @@ describe("SvgrClient with retry", () => {
   });
 });
 
+describe("SvgrClient job methods", () => {
+  let mockNetwork: MockNetworkClient;
+  let client: SvgrClient;
+
+  beforeEach(() => {
+    mockNetwork = new MockNetworkClient();
+    client = new SvgrClient({
+      baseUrl: "http://localhost:3001",
+      networkClient: mockNetwork,
+    });
+  });
+
+  it("createJob sends POST to /api/v1/jobs", async () => {
+    const mockResponse = {
+      success: true,
+      data: {
+        jobId: "j1",
+        imageId: "i1",
+        status: "pending",
+        quality: 5,
+        transparentBg: false,
+        ocr: true,
+        mergePaths: true,
+        smooth: 0,
+        imageType: "auto",
+        apiVersion: "1.0.52",
+        createdAt: new Date().toISOString(),
+      },
+      timestamp: new Date().toISOString(),
+    };
+    mockNetwork.setMockResponse(
+      "http://localhost:3001/api/v1/jobs",
+      { data: mockResponse, ok: true },
+      "POST",
+    );
+
+    const result = await client.createJob({ imageId: "i1", quality: 7 });
+    expect(result.success).toBe(true);
+    expect(
+      mockNetwork.wasUrlCalled("http://localhost:3001/api/v1/jobs", "POST"),
+    ).toBe(true);
+  });
+
+  it("getJobStatus sends GET to /api/v1/jobs/:id", async () => {
+    const mockResponse = {
+      success: true,
+      data: {
+        jobId: "j1",
+        imageId: "i1",
+        status: "done",
+        quality: 5,
+        transparentBg: false,
+        ocr: true,
+        mergePaths: true,
+        smooth: 0,
+        imageType: "auto",
+        apiVersion: "1.0.52",
+        createdAt: new Date().toISOString(),
+      },
+      timestamp: new Date().toISOString(),
+    };
+    mockNetwork.setMockResponse(
+      "http://localhost:3001/api/v1/jobs/j1",
+      { data: mockResponse, ok: true },
+      "GET",
+    );
+
+    const result = await client.getJobStatus("j1");
+    expect(result.success).toBe(true);
+    expect(
+      mockNetwork.wasUrlCalled(
+        "http://localhost:3001/api/v1/jobs/j1",
+        "GET",
+      ),
+    ).toBe(true);
+  });
+
+  it("getJobsForImage sends GET with imageId query", async () => {
+    const mockResponse = {
+      success: true,
+      data: [],
+      timestamp: new Date().toISOString(),
+    };
+    mockNetwork.setMockResponse(
+      "http://localhost:3001/api/v1/jobs?imageId=i1",
+      { data: mockResponse, ok: true },
+      "GET",
+    );
+
+    const result = await client.getJobsForImage("i1");
+    expect(result.success).toBe(true);
+    expect(
+      mockNetwork.wasUrlCalled(
+        "http://localhost:3001/api/v1/jobs?imageId=i1",
+        "GET",
+      ),
+    ).toBe(true);
+  });
+});
+
 describe("SvgrApiError", () => {
   it("includes status code", () => {
     const error = new SvgrApiError(404, "Not found");

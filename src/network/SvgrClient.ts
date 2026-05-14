@@ -2,7 +2,10 @@ import type { NetworkClient } from "@sudobility/types";
 import type {
   BaseResponse,
   ConvertResult,
+  CreateJobRequest,
   ImageType,
+  ImageUploadResult,
+  JobResult,
 } from "@sudobility/svgr_types";
 
 /**
@@ -243,6 +246,98 @@ export class SvgrClient {
       throw new SvgrApiError(response.status, "Failed to fetch SVG");
     }
     return response.text();
+  }
+
+  /**
+   * Upload an image file for persistent storage.
+   * Uses networkClient.post with FormData (handles auth automatically).
+   */
+  async uploadImage(
+    file: File | { buffer: ArrayBuffer; filename: string; mimeType: string },
+  ): Promise<BaseResponse<ImageUploadResult>> {
+    const formData = new FormData();
+    if (file instanceof File) {
+      formData.append("image", file);
+    } else {
+      const blob = new Blob([file.buffer], { type: file.mimeType });
+      formData.append("image", blob, file.filename);
+    }
+
+    const url = `${this.baseUrl}/api/v1/images/upload`;
+    const response = await this.networkClient.post<
+      BaseResponse<ImageUploadResult>
+    >(url, formData, { timeout: 60000 });
+
+    if (!response.ok) {
+      throw new SvgrApiError(
+        response.status,
+        (response.data as { error?: string })?.error ?? "Upload failed",
+      );
+    }
+
+    return response.data as BaseResponse<ImageUploadResult>;
+  }
+
+  /** Create a conversion job for an uploaded image. */
+  async createJob(request: CreateJobRequest): Promise<BaseResponse<JobResult>> {
+    const url = `${this.baseUrl}/api/v1/jobs`;
+    const response = await this.networkClient.post<BaseResponse<JobResult>>(
+      url,
+      request,
+    );
+
+    if (!response.ok) {
+      throw new SvgrApiError(
+        response.status,
+        (response.data as { error?: string })?.error ?? "Job creation failed",
+      );
+    }
+
+    return response.data as BaseResponse<JobResult>;
+  }
+
+  /** Get the current status of a conversion job. */
+  async getJobStatus(jobId: string): Promise<BaseResponse<JobResult>> {
+    const url = `${this.baseUrl}/api/v1/jobs/${jobId}`;
+    const response = await this.networkClient.get<BaseResponse<JobResult>>(url);
+
+    if (!response.ok) {
+      throw new SvgrApiError(
+        response.status,
+        (response.data as { error?: string })?.error ??
+          "Failed to get job status",
+      );
+    }
+
+    return response.data as BaseResponse<JobResult>;
+  }
+
+  /** List all conversion jobs for a given image. */
+  async getJobsForImage(imageId: string): Promise<BaseResponse<JobResult[]>> {
+    const url = `${this.baseUrl}/api/v1/jobs?imageId=${encodeURIComponent(imageId)}`;
+    const response =
+      await this.networkClient.get<BaseResponse<JobResult[]>>(url);
+
+    if (!response.ok) {
+      throw new SvgrApiError(
+        response.status,
+        (response.data as { error?: string })?.error ?? "Failed to list jobs",
+      );
+    }
+
+    return response.data as BaseResponse<JobResult[]>;
+  }
+
+  /** Fetch a file by name (SVG, JPEG preview, or uploaded image). Returns Blob. */
+  async fetchFile(filename: string): Promise<Blob> {
+    const url = `${this.baseUrl}/api/v1/files/${encodeURIComponent(filename)}`;
+    const response = await this.networkClient.get<Blob>(url);
+
+    if (!response.ok) {
+      throw new SvgrApiError(response.status, "File not found");
+    }
+
+    return response.data as Blob;
   }
 
   /**
