@@ -234,10 +234,7 @@ describe("SvgrClient job methods", () => {
     const result = await client.getJobStatus("j1");
     expect(result.success).toBe(true);
     expect(
-      mockNetwork.wasUrlCalled(
-        "http://localhost:3001/api/v1/jobs/j1",
-        "GET",
-      ),
+      mockNetwork.wasUrlCalled("http://localhost:3001/api/v1/jobs/j1", "GET"),
     ).toBe(true);
   });
 
