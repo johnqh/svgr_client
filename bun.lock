@@ -5,7 +5,7 @@
     "": {
       "name": "@sudobility/svgr_client",
       "dependencies": {
-        "@sudobility/svgr_types": "^1.0.22",
+        "@sudobility/svgr_types": "^1.0.24",
       },
       "devDependencies": {
         "@eslint/js": "^9.38.0",
@@ -159,7 +159,7 @@
 
     "@sudobility/di": ["@sudobility/di@1.5.56", "", { "peerDependencies": { "@notifee/react-native": ">=7.0.0", "@react-native-async-storage/async-storage": ">=1.19.0", "@react-native-community/netinfo": ">=9.0.0", "@react-native-firebase/analytics": ">=18.0.0", "@react-native-firebase/app": ">=18.0.0", "@react-native-firebase/messaging": ">=18.0.0", "@react-native-firebase/remote-config": ">=18.0.0", "@sudobility/types": "^1.9.62", "firebase": ">=11.0.0", "react": ">=18.0.0", "react-native": ">=0.70.0" }, "optionalPeers": ["@notifee/react-native", "@react-native-async-storage/async-storage", "@react-native-community/netinfo", "@react-native-firebase/analytics", "@react-native-firebase/app", "@react-native-firebase/messaging", "@react-native-firebase/remote-config", "firebase", "react-native"] }, "sha512-AoE8QVHZcoiwG26nqSoP53Ph2yjtac5xfAThA6oSlkeE8j/IVWPvkhA1pGW5DJhEEL16Npsl7g7Fev335wz+0A=="],
 
-    "@sudobility/svgr_types": ["@sudobility/svgr_types@1.0.22", "", { "peerDependencies": { "@sudobility/types": "^1.9.62" } }, "sha512-Nd3ofKHfo4eOtXpLp1UU1PMtOdA6s0ZvT/vhORWBgxS3jBORVW6eXUi2NpyZ0GTInOprGvF78RUpDLNHYxem1w=="],
+    "@sudobility/svgr_types": ["@sudobility/svgr_types@1.0.24", "", { "peerDependencies": { "@sudobility/types": "^1.9.62" } }, "sha512-p6e6jAM+ZAs7kOkXpp/fXhLN9lWk4V0ymJsIeEJ0A/sR4l/v6ypsWqneUNvFKDx/J0jOxNvMB+R6DA4Li4qZbw=="],
 
     "@sudobility/types": ["@sudobility/types@1.9.62", "", {}, "sha512-GOkz5oE7Fmlolba2aemBF2fKPtH4I2lHAjVta+fqZAoAV72DQaWYzVEjTwKZs/ACY/g9Z262IDa7lEh+IOrn7w=="],
 
