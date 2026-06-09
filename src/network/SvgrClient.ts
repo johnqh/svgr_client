@@ -1,6 +1,7 @@
 import type { NetworkClient } from "@sudobility/types";
 import type {
   BaseResponse,
+  Community,
   ConvertResult,
   CreateJobRequest,
   ImageType,
@@ -339,6 +340,23 @@ export class SvgrClient {
     }
 
     return response.data as Blob;
+  }
+
+  /** Fetch communities for a given language. Public endpoint, no auth required. */
+  async getCommunities(language: string): Promise<BaseResponse<Community[]>> {
+    const url = `${this.baseUrl}/api/v1/communities?lang=${encodeURIComponent(language)}`;
+    const response =
+      await this.networkClient.get<BaseResponse<Community[]>>(url);
+
+    if (!response.ok) {
+      throw new SvgrApiError(
+        response.status,
+        (response.data as { error?: string })?.error ??
+          "Failed to fetch communities",
+      );
+    }
+
+    return response.data as BaseResponse<Community[]>;
   }
 
   /** List all images with their jobs for the authenticated user. */

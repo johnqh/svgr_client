@@ -29,12 +29,16 @@ export {
   useJobStatus,
   useImageJobs,
   useUserImages,
+  useCommunities,
   svgrKeys,
 } from "./hooks";
 export type { ConvertMutationParams } from "./hooks/useConvert";
 
 // Re-export types for convenience
 export type {
+  Community,
+  CommunityPlatform,
+  CommunitiesResponse,
   ConvertRequest,
   ConvertResult,
   ConvertResponse,
@@ -51,4 +55,4 @@ export type {
   JobStatus,
   JobStatusResponse,
 } from "@sudobility/svgr_types";
-export { IMAGE_TYPES } from "@sudobility/svgr_types";
+export { IMAGE_TYPES, COMMUNITY_PLATFORMS } from "@sudobility/svgr_types";

@@ -30,4 +30,7 @@ export const svgrKeys = {
   /** Key for all jobs of an image: `["svgr", "jobs", "image", imageId]` */
   imageJobs: (imageId: string) =>
     [...svgrKeys.jobs(), "image", imageId] as const,
+  /** Key for communities by language: `["svgr", "communities", language]` */
+  communities: (language: string) =>
+    [...svgrKeys.all, "communities", language] as const,
 };

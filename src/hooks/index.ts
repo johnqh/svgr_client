@@ -4,4 +4,5 @@ export { useCreateJob } from "./useCreateJob";
 export { useJobStatus } from "./useJobStatus";
 export { useImageJobs } from "./useImageJobs";
 export { useUserImages } from "./useUserImages";
+export { useCommunities } from "./useCommunities";
 export { svgrKeys } from "./query-keys";
