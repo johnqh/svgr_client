@@ -5,7 +5,7 @@ import { svgrKeys } from "./query-keys";
 export function useJobStatus(client: SvgrClient, jobId: string | null) {
   return useQuery({
     queryKey: svgrKeys.job(jobId ?? ""),
-    queryFn: () => client.getJobStatus(jobId!),
+    queryFn: () => client.getJobStatus(jobId ?? ""),
     enabled: !!jobId,
     refetchInterval: (query) => {
       const status = query.state.data?.data?.status;
