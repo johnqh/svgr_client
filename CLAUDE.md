@@ -1,5 +1,10 @@
 # SVGR Client
 
+> **Git policy — never auto-commit or auto-push.** Leave your work in the working tree.
+> Run `git commit`, `git push`, `gh pr create`, or `scripts/push_all.sh` **only when the user
+> explicitly asks in that turn**. Approval for an earlier change does not carry forward, and
+> finishing a task is not permission to commit it.
+
 API client SDK for SVGR with React Query hooks.
 
 **npm**: `@sudobility/svgr_client` (public)
@@ -146,3 +151,7 @@ svgr_lib, svgr_app, svgr_app_rn
 - Client tests verify HTTP request formation, error handling, and retry behavior
 - Query key tests verify the key factory produces correct cache keys
 - Uses `MockNetworkClient` from `@sudobility/di/mocks` for mocking HTTP requests
+
+## Git Workflow
+
+- Do not use feature branches for code changes. Always stay on the current branch.
