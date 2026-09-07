@@ -1,6 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 import type { CreateJobRequest } from "@sudobility/svgr_types";
-import type { SvgrClient } from "../network/SvgrClient";
+import type { SvgrClient } from "../network/SvgrClient.js";
 
 export function useCreateJob(client: SvgrClient) {
   return useMutation({

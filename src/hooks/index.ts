@@ -1,8 +1,8 @@
-export { useConvert } from "./useConvert";
-export { useUploadImage } from "./useUploadImage";
-export { useCreateJob } from "./useCreateJob";
-export { useJobStatus } from "./useJobStatus";
-export { useImageJobs } from "./useImageJobs";
-export { useUserImages } from "./useUserImages";
-export { useCommunities } from "./useCommunities";
-export { svgrKeys } from "./query-keys";
+export { useConvert } from "./useConvert.js";
+export { useUploadImage } from "./useUploadImage.js";
+export { useCreateJob } from "./useCreateJob.js";
+export { useJobStatus } from "./useJobStatus.js";
+export { useImageJobs } from "./useImageJobs.js";
+export { useUserImages } from "./useUserImages.js";
+export { useCommunities } from "./useCommunities.js";
+export { svgrKeys } from "./query-keys.js";

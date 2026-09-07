@@ -1,5 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
-import type { SvgrClient } from "../network/SvgrClient";
+import type { SvgrClient } from "../network/SvgrClient.js";
 
 export function useUploadImage(client: SvgrClient) {
   return useMutation({

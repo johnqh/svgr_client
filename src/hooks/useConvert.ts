@@ -1,6 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 import type { ImageType } from "@sudobility/svgr_types";
-import type { SvgrClient } from "../network/SvgrClient";
+import type { SvgrClient } from "../network/SvgrClient.js";
 
 /**
  * Parameters for the {@link useConvert} mutation hook.

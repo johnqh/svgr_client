@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { svgrKeys } from "./query-keys";
+import { svgrKeys } from "./query-keys.js";
 
 describe("svgrKeys", () => {
   it("has all key as base", () => {

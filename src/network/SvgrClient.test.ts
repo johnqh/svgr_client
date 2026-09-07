@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { MockNetworkClient } from "@sudobility/di/mocks";
-import { SvgrClient, SvgrApiError } from "./SvgrClient";
-import type { RetryConfig } from "./SvgrClient";
+import { SvgrClient, SvgrApiError } from "./SvgrClient.js";
+import type { RetryConfig } from "./SvgrClient.js";
 
 describe("SvgrClient", () => {
   let client: SvgrClient;

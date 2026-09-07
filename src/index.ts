@@ -19,7 +19,7 @@ export {
   SvgrApiError,
   type SvgrClientConfig,
   type RetryConfig,
-} from "./network/SvgrClient";
+} from "./network/SvgrClient.js";
 
 // Hooks
 export {
@@ -31,8 +31,8 @@ export {
   useUserImages,
   useCommunities,
   svgrKeys,
-} from "./hooks";
-export type { ConvertMutationParams } from "./hooks/useConvert";
+} from "./hooks/index.js";
+export type { ConvertMutationParams } from "./hooks/useConvert.js";
 
 // Re-export types for convenience
 export type {
